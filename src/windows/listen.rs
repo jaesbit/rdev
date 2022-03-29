@@ -35,8 +35,8 @@ unsafe extern "system" fn raw_callback(code: c_int, param: WPARAM, lpdata: LPARA
             };
             if let Some(callback) = &mut GLOBAL_CALLBACK {
                 callback(event);
-            }
-        }
+            }        
+        }     
     }
     CallNextHookEx(HOOK, code, param, lpdata)
 }
@@ -47,7 +47,7 @@ where
 {
     unsafe {
         GLOBAL_CALLBACK = Some(Box::new(callback));
-        set_key_hook(raw_callback)?;
+        set_key_hook(raw_callback)?; 
         set_mouse_hook(raw_callback)?;
 
         GetMessageA(null_mut(), null_mut(), 0, 0);

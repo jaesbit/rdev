@@ -97,7 +97,7 @@ impl std::error::Error for SimulateError {}
 /// a different value too.
 /// Careful, on Windows KpReturn does not exist, it' s strictly equivalent to Return, also Keypad keys
 /// get modified if NumLock is Off and ARE pagedown and so on.
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 #[cfg_attr(feature = "serialize", derive(Serialize, Deserialize))]
 pub enum Key {
     /// Alt key on Linux and Windows (option key on macOS)
@@ -208,19 +208,33 @@ pub enum Key {
     Kp9,
     KpDelete,
     Function,
+    MouseButtonLeft,
+    MouseButtonRight,
+    MouseButtonMiddle,
     Unknown(u32),
 }
 
 /// Standard mouse buttons
 /// Some mice have more than 3 buttons. These are not defined, and different
 /// OSs will give different `Button::Unknown` values.
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 #[cfg_attr(feature = "serialize", derive(Serialize, Deserialize))]
 pub enum Button {
     Left,
     Right,
     Middle,
     Unknown(u8),
+}
+
+impl From<Key> for Button {
+    fn from(key: Key) -> Self {
+        match key {
+            Key::MouseButtonMiddle => Button::Middle,
+            Key::MouseButtonRight => Button::Right,
+            Key::MouseButtonLeft => Button::Left,
+            _ => Button::Unknown(0),
+        }
+    }
 }
 
 /// In order to manage different OSs, the current EventType choices are a mix and
